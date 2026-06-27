@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
 import '../controllers/user_controller.dart';
 import '../controllers/payment_controller.dart';
+import '../widgets/custom_popup.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -152,7 +153,20 @@ class ProfileScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: GestureDetector(
-                onTap: () => userController.logout(),
+                onTap: () {
+                  CustomPopup.show(
+                    icon: Icons.meeting_room_outlined,
+                    iconColor: AppColors.error,
+                    title: 'Oh no! You\'re leaving...\nAre you sure?',
+                    primaryButtonText: 'Nah, Just Kidding',
+                    onPrimaryButtonTap: () => Get.back(),
+                    secondaryButtonText: 'Yes, Log Me Out',
+                    onSecondaryButtonTap: () {
+                      Get.back(); // Close dialog
+                      userController.logout(showSuccess: true);
+                    },
+                  );
+                },
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 16),

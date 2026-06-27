@@ -66,15 +66,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'noTelepon': _teleponController.text.trim(),
       });
 
-      Get.snackbar(
-        'Berhasil! 🎉',
-        'Akun Anda berhasil dibuat. Selamat datang, ${_namaController.text}!',
-        backgroundColor: AppColors.primary,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-      );
-
-      Get.offAllNamed('/home');
+      Get.offAllNamed('/home', arguments: {
+        'showRegisterSuccess': true,
+        'userName': _namaController.text,
+      });
     } catch (e) {
       Get.snackbar(
         'Registrasi Gagal',

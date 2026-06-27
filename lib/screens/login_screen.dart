@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
 import '../controllers/user_controller.dart';
 import '../services/database_service.dart';
+import '../widgets/custom_popup.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -18,6 +19,22 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (Get.arguments != null && Get.arguments['showLogoutSuccess'] == true) {
+        CustomPopup.show(
+          icon: Icons.meeting_room,
+          iconColor: AppColors.error,
+          title: 'You\'ve successfully Logged out.',
+          primaryButtonText: 'Back to Login',
+          onPrimaryButtonTap: () => Get.back(), // Closes dialog
+        );
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -51,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final userController = Get.find<UserController>();
       await userController.setUserFromDB(userData);
 
-      Get.offAllNamed('/home');
+      Get.offAllNamed('/home', arguments: {'showLoginSuccess': true});
     } catch (e) {
       Get.snackbar(
         'Error',

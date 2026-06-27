@@ -74,7 +74,7 @@ class UserController extends GetxController {
   }
 
   /// Logout — bersihkan sesi
-  Future<void> logout() async {
+  Future<void> logout({bool showSuccess = false}) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('userId');
     await prefs.remove('userEmail');
@@ -86,6 +86,6 @@ class UserController extends GetxController {
     phone.value = '';
     isLoggedIn.value = false;
 
-    Get.offAllNamed('/login');
+    Get.offAllNamed('/login', arguments: {'showLogoutSuccess': showSuccess});
   }
 }

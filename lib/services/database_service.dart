@@ -125,6 +125,12 @@ class DatabaseService {
     return result.first;
   }
 
+  /// Ambil semua user (Untuk Admin)
+  Future<List<Map<String, dynamic>>> getAllUsers() async {
+    final db = await database;
+    return await db.query('users', orderBy: 'createdAt DESC');
+  }
+
   /// Update profil user
   Future<void> updateUser({
     required int userId,

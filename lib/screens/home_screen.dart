@@ -6,6 +6,7 @@ import '../constants/colors.dart';
 import '../constants/assets.dart';
 import '../models/lapangan_model.dart';
 import '../controllers/user_controller.dart';
+import '../widgets/custom_popup.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -34,6 +35,33 @@ class _HomeScreenState extends State<HomeScreen> {
     return LapanganData.dummyLapangan
         .where((l) => l.kategori == _selectedKategori)
         .toList();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (Get.arguments != null) {
+        if (Get.arguments['showLoginSuccess'] == true) {
+          CustomPopup.show(
+            icon: Icons.check_circle_rounded,
+            iconColor: AppColors.primary,
+            title: 'Login Berhasil!',
+            primaryButtonText: 'Lanjut',
+            onPrimaryButtonTap: () => Get.back(),
+          );
+        } else if (Get.arguments['showRegisterSuccess'] == true) {
+          final userName = Get.arguments['userName'] ?? '';
+          CustomPopup.show(
+            icon: Icons.celebration,
+            iconColor: AppColors.primary,
+            title: 'Akun Berhasil Didaftarkan!\nSelamat datang, $userName',
+            primaryButtonText: 'Mulai Sekarang',
+            onPrimaryButtonTap: () => Get.back(),
+          );
+        }
+      }
+    });
   }
 
   @override
@@ -842,7 +870,20 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icons.logout,
               label: 'Keluar',
               color: AppColors.error,
-              onTap: () => Get.find<UserController>().logout(),
+              onTap: () {
+                CustomPopup.show(
+                  icon: Icons.meeting_room_outlined,
+                  iconColor: AppColors.error,
+                  title: 'Oh no! You\'re leaving...\nAre you sure?',
+                  primaryButtonText: 'Nah, Just Kidding',
+                  onPrimaryButtonTap: () => Get.back(),
+                  secondaryButtonText: 'Yes, Log Me Out',
+                  onSecondaryButtonTap: () {
+                    Get.back(); // Close dialog
+                    Get.find<UserController>().logout(showSuccess: true);
+                  },
+                );
+              },
             ),
           ],
         ),
