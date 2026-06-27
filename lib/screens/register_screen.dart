@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
+import '../controllers/user_controller.dart';
+import '../services/database_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -43,11 +45,47 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
       return;
     }
-    if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
-      await Future.delayed(const Duration(seconds: 1));
-      setState(() => _isLoading = false);
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+    try {
+      // Simpan ke database SQLite
+      final userId = await DatabaseService.instance.registerUser(
+        namaLengkap: _namaController.text.trim(),
+        email: _emailController.text.trim(),
+        noTelepon: _teleponController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      // Login otomatis setelah register
+      final userController = Get.find<UserController>();
+      await userController.setUserFromDB({
+        'id': userId,
+        'namaLengkap': _namaController.text.trim(),
+        'email': _emailController.text.trim().toLowerCase(),
+        'noTelepon': _teleponController.text.trim(),
+      });
+
+      Get.snackbar(
+        'Berhasil! 🎉',
+        'Akun Anda berhasil dibuat. Selamat datang, ${_namaController.text}!',
+        backgroundColor: AppColors.primary,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+      );
+
       Get.offAllNamed('/home');
+    } catch (e) {
+      Get.snackbar(
+        'Registrasi Gagal',
+        e.toString().replaceAll('Exception: ', ''),
+        backgroundColor: AppColors.error,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -100,7 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   keyboardType: TextInputType.emailAddress,
                   validator: (val) {
                     if (val == null || val.isEmpty) return 'Email tidak boleh kosong';
-                    if (!val.contains('@')) return 'Email tidak valid';
+                    if (!val.contains('@')) return 'Format email tidak valid';
                     return null;
                   },
                 ),
@@ -201,21 +239,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           children: [
                             TextSpan(
                               text: 'Syarat & Ketentuan',
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.primary,
-                              ),
-                            ),
-                            TextSpan(
-                              text: ' dan ',
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                color: AppColors.greyText,
-                              ),
-                            ),
-                            TextSpan(
-                              text: 'Kebijakan Privasi',
                               style: GoogleFonts.poppins(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,

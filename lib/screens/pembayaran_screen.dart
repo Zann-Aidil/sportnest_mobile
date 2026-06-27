@@ -4,6 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../constants/colors.dart';
 import '../models/lapangan_model.dart';
+import '../models/booking_model.dart';
+import '../controllers/user_controller.dart';
+import '../controllers/booking_controller.dart';
 
 class PembayaranScreen extends StatefulWidget {
   const PembayaranScreen({Key? key}) : super(key: key);
@@ -44,8 +47,38 @@ class _PembayaranScreenState extends State<PembayaranScreen>
   void _handlePayment() async {
     setState(() => _isProcessing = true);
     await Future.delayed(const Duration(seconds: 2));
+
+    final userController = Get.find<UserController>();
+    final bookingController = Get.find<BookingController>();
+    final args = Get.arguments as Map<String, dynamic>;
+    final tanggal = args['tanggal'] as DateTime;
+    final jamMulai = args['jamMulai'] as String;
+    final jamSelesai = args['jamSelesai'] as String;
+    final metode = args['metode'] as String;
+    
+    final kodeBooking = 'SN${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
+    
+    final newBooking = BookingModel(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      lapanganId: lapangan.id,
+      lapanganNama: lapangan.nama,
+      lapanganLokasi: lapangan.lokasi,
+      lapanganImage: lapangan.imageUrl,
+      tanggal: tanggal,
+      jamMulai: jamMulai,
+      jamSelesai: jamSelesai,
+      durasi: 1,
+      totalHarga: lapangan.hargaPerJam,
+      metodePembayaran: metode,
+      status: 'Aktif',
+      kodeBooking: kodeBooking,
+      userEmail: userController.email.value,
+    );
+    
+    await bookingController.addBooking(newBooking);
+
     setState(() => _isProcessing = false);
-    Get.offNamed('/pembayaran-berhasil', arguments: lapangan);
+    Get.offNamed('/pembayaran-berhasil', arguments: newBooking);
   }
 
   @override

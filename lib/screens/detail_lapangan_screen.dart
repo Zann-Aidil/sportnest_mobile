@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:animate_do/animate_do.dart';
 import '../constants/colors.dart';
+import '../constants/assets.dart';
 import '../models/lapangan_model.dart';
 
 class DetailLapanganScreen extends StatefulWidget {
@@ -36,19 +38,8 @@ class _DetailLapanganScreenState extends State<DetailLapanganScreen> {
     }
   }
 
-  IconData _getLapanganIcon(String kategori) {
-    switch (kategori) {
-      case 'Futsal':
-        return Icons.sports_soccer;
-      case 'Basket':
-        return Icons.sports_basketball;
-      case 'Badminton':
-        return Icons.sports_tennis;
-      case 'Tenis':
-        return Icons.sports_tennis;
-      default:
-        return Icons.sports;
-    }
+  String _getKategoriIcon(String kategori) {
+    return AppAssets.getKategoriIcon(kategori);
   }
 
   IconData _getFasilitasIcon(String fasilitas) {
@@ -82,15 +73,18 @@ class _DetailLapanganScreenState extends State<DetailLapanganScreen> {
                   // Hero Image
                   Stack(
                     children: [
-                      Container(
-                        height: 240,
-                        width: double.infinity,
-                        color: _getLapanganColor(lapangan.kategori),
-                        child: Center(
-                          child: Icon(
-                            _getLapanganIcon(lapangan.kategori),
-                            size: 90,
-                            color: Colors.white.withOpacity(0.6),
+                      Hero(
+                        tag: 'lapangan_image_${lapangan.id}',
+                        child: Image.asset(
+                          'assets/images/${lapangan.imageUrl}.jpg',
+                          width: double.infinity,
+                          height: 300,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Container(
+                            width: double.infinity,
+                            height: 300,
+                            color: AppColors.lightGrey,
+                            child: const Icon(Icons.image_not_supported, color: AppColors.greyText, size: 50),
                           ),
                         ),
                       ),
@@ -151,102 +145,105 @@ class _DetailLapanganScreenState extends State<DetailLapanganScreen> {
 
                   Padding(
                     padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Name
-                        Text(
-                          lapangan.nama,
-                          style: GoogleFonts.poppins(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.blackText,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-
-                        // Location
-                        Row(
-                          children: [
-                            const Icon(Icons.location_on_outlined,
-                                size: 16, color: AppColors.greyText),
-                            const SizedBox(width: 4),
-                            Text(
-                              lapangan.lokasi,
-                              style: GoogleFonts.poppins(
-                                fontSize: 13,
-                                color: AppColors.greyText,
-                              ),
+                    child: FadeInUp(
+                      duration: const Duration(milliseconds: 500),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Name
+                          Text(
+                            lapangan.nama,
+                            style: GoogleFonts.poppins(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.blackText,
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
+                          ),
+                          const SizedBox(height: 6),
 
-                        // Rating
-                        Row(
-                          children: [
-                            const Icon(Icons.star_rounded,
-                                size: 18, color: Colors.amber),
-                            const SizedBox(width: 4),
-                            Text(
-                              '${lapangan.rating}',
-                              style: GoogleFonts.poppins(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.blackText,
+                          // Location
+                          Row(
+                            children: [
+                              const Icon(Icons.location_on_outlined,
+                                  size: 16, color: AppColors.greyText),
+                              const SizedBox(width: 4),
+                              Text(
+                                lapangan.lokasi,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 13,
+                                  color: AppColors.greyText,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              '(${lapangan.jumlahUlasan} ulasan)',
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                color: AppColors.greyText,
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+
+                          // Rating
+                          Row(
+                            children: [
+                              const Icon(Icons.star_rounded,
+                                  size: 18, color: Colors.amber),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${lapangan.rating}',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.blackText,
+                                ),
                               ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '(${lapangan.jumlahUlasan} ulasan)',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  color: AppColors.greyText,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+
+                          // Deskripsi
+                          Text(
+                            'Deskripsi',
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.blackText,
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            lapangan.deskripsi,
+                            style: GoogleFonts.poppins(
+                              fontSize: 13,
+                              color: AppColors.greyText,
+                              height: 1.6,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
 
-                        // Deskripsi
-                        Text(
-                          'Deskripsi',
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.blackText,
+                          // Fasilitas
+                          Text(
+                            'Fasilitas',
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.blackText,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          lapangan.deskripsi,
-                          style: GoogleFonts.poppins(
-                            fontSize: 13,
-                            color: AppColors.greyText,
-                            height: 1.6,
+                          const SizedBox(height: 12),
+                          Wrap(
+                            spacing: 12,
+                            runSpacing: 12,
+                            children: lapangan.fasilitas
+                                .map((f) => _buildFasilitasItem(f))
+                                .toList(),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-
-                        // Fasilitas
-                        Text(
-                          'Fasilitas',
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.blackText,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Wrap(
-                          spacing: 12,
-                          runSpacing: 12,
-                          children: lapangan.fasilitas
-                              .map((f) => _buildFasilitasItem(f))
-                              .toList(),
-                        ),
-                        const SizedBox(height: 100),
-                      ],
+                          const SizedBox(height: 24),
+                        ],
+                      ),
                     ),
                   ),
                 ],

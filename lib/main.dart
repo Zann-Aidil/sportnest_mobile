@@ -19,6 +19,12 @@ import 'screens/pembayaran_screen.dart';
 import 'screens/pembayaran_berhasil_screen.dart';
 import 'screens/riwayat_booking_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/profile_screen.dart';
+import 'screens/payment_method_screen.dart';
+import 'screens/edit_profile_screen.dart';
+
+// Import bindings
+import 'bindings/initial_binding.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,6 +38,8 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: AppStrings.appName,
       debugShowCheckedModeBanner: false,
+      initialBinding: InitialBinding(),
+      defaultTransition: Transition.cupertino,
 
       // Theme Configuration
       theme: ThemeData(
@@ -195,7 +203,7 @@ class MyApp extends StatelessWidget {
         ),
 
         // Card Theme
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           color: AppColors.white,
           elevation: 2,
           shape: RoundedRectangleBorder(
@@ -268,6 +276,16 @@ class MyApp extends StatelessWidget {
         GetPage(
           name: '/profile',
           page: () => const ProfileScreen(),
+          transition: Transition.rightToLeft,
+        ),
+        GetPage(
+          name: '/payment-method',
+          page: () => const PaymentMethodScreen(),
+          transition: Transition.rightToLeft,
+        ),
+        GetPage(
+          name: '/edit-profile',
+          page: () => const EditProfileScreen(),
           transition: Transition.rightToLeft,
         ),
       ],

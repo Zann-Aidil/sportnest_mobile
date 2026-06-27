@@ -12,6 +12,7 @@ class BookingModel {
   final String metodePembayaran;
   final String status;
   final String kodeBooking;
+  final String userEmail;
 
   BookingModel({
     required this.id,
@@ -27,7 +28,46 @@ class BookingModel {
     required this.metodePembayaran,
     required this.status,
     required this.kodeBooking,
+    required this.userEmail,
   });
+
+  factory BookingModel.fromJson(Map<String, dynamic> json) {
+    return BookingModel(
+      id: json['id'],
+      lapanganId: json['lapanganId'],
+      lapanganNama: json['lapanganNama'],
+      lapanganLokasi: json['lapanganLokasi'],
+      lapanganImage: json['lapanganImage'],
+      tanggal: DateTime.parse(json['tanggal']),
+      jamMulai: json['jamMulai'],
+      jamSelesai: json['jamSelesai'],
+      durasi: json['durasi'],
+      totalHarga: json['totalHarga'],
+      metodePembayaran: json['metodePembayaran'],
+      status: json['status'],
+      kodeBooking: json['kodeBooking'],
+      userEmail: json['userEmail'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'lapanganId': lapanganId,
+      'lapanganNama': lapanganNama,
+      'lapanganLokasi': lapanganLokasi,
+      'lapanganImage': lapanganImage,
+      'tanggal': tanggal.toIso8601String(),
+      'jamMulai': jamMulai,
+      'jamSelesai': jamSelesai,
+      'durasi': durasi,
+      'totalHarga': totalHarga,
+      'metodePembayaran': metodePembayaran,
+      'status': status,
+      'kodeBooking': kodeBooking,
+      'userEmail': userEmail,
+    };
+  }
 
   String get formattedTanggal {
     final days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];

@@ -2,15 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
-import '../models/lapangan_model.dart';
+import '../models/booking_model.dart';
+import '../controllers/booking_controller.dart';
 
-class PembayaranBerhasilScreen extends StatelessWidget {
+class PembayaranBerhasilScreen extends StatefulWidget {
   const PembayaranBerhasilScreen({Key? key}) : super(key: key);
 
   @override
+  State<PembayaranBerhasilScreen> createState() => _PembayaranBerhasilScreenState();
+}
+
+class _PembayaranBerhasilScreenState extends State<PembayaranBerhasilScreen> {
+  bool _saved = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _saveBooking();
+  }
+
+  Future<void> _saveBooking() async {
+    final booking = Get.arguments as BookingModel?;
+    if (booking == null || _saved) return;
+    _saved = true;
+    try {
+      final bookingController = Get.find<BookingController>();
+      await bookingController.addBooking(booking);
+    } catch (_) {}
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final lapangan = Get.arguments as LapanganModel? ?? LapanganData.dummyLapangan.first;
-    final kodeBooking = 'SN${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
+    final booking = Get.arguments as BookingModel?;
+    if (booking == null) return const Scaffold(body: Center(child: Text('Data tidak ditemukan')));
+
+    final kodeBooking = booking.kodeBooking;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -87,11 +113,11 @@ class PembayaranBerhasilScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     const Divider(color: AppColors.greyBorder),
                     const SizedBox(height: 12),
-                    _buildInfoRow('Lapangan', lapangan.nama),
+                    _buildInfoRow('Lapangan', booking.lapanganNama),
                     const SizedBox(height: 6),
-                    _buildInfoRow('Lokasi', lapangan.lokasi),
+                    _buildInfoRow('Lokasi', booking.lapanganLokasi),
                     const SizedBox(height: 6),
-                    _buildInfoRow('Harga', lapangan.formattedPriceShort),
+                    _buildInfoRow('Harga', booking.formattedHarga),
                   ],
                 ),
               ),

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:animate_do/animate_do.dart';
 import '../constants/colors.dart';
+import '../constants/assets.dart';
 import '../models/lapangan_model.dart';
+import '../controllers/user_controller.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -19,11 +22,11 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<String> _kategoriList = ['Semua', 'Futsal', 'Basket', 'Badminton', 'Tenis'];
 
   final List<Map<String, dynamic>> _kategoriIcons = [
-    {'name': 'Semua', 'icon': Icons.sports},
-    {'name': 'Futsal', 'icon': Icons.sports_soccer},
-    {'name': 'Basket', 'icon': Icons.sports_basketball},
-    {'name': 'Badminton', 'icon': Icons.sports_tennis},
-    {'name': 'Tenis', 'icon': Icons.sports_tennis},
+    {'name': 'Semua', 'icon': AppAssets.iconSemua},
+    {'name': 'Futsal', 'icon': AppAssets.iconFutsal},
+    {'name': 'Basket', 'icon': AppAssets.iconBasket},
+    {'name': 'Badminton', 'icon': AppAssets.iconBadminton},
+    {'name': 'Tenis', 'icon': AppAssets.iconTenis},
   ];
 
   List<LapanganModel> get _filteredLapangan {
@@ -37,6 +40,16 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  Color _getLapanganColor(String kategori) {
+    switch (kategori) {
+      case 'Futsal': return const Color(0xFF27A349);
+      case 'Basket': return const Color(0xFFE8821A);
+      case 'Badminton': return const Color(0xFF1976D2);
+      case 'Tenis': return const Color(0xFF7B1FA2);
+      default: return const Color(0xFF27A349);
+    }
   }
 
   @override
@@ -205,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
               delegate: SliverChildBuilderDelegate(
                 (ctx, i) {
                   final lapangan = _filteredLapangan[i];
-                  return _buildLapanganCard(lapangan);
+                  return _buildLapanganCard(lapangan, i);
                 },
                 childCount: _filteredLapangan.length,
               ),
@@ -320,50 +333,59 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: _kategoriIcons.map((k) {
+        children: _kategoriIcons.asMap().entries.map((entry) {
+          final index = entry.key;
+          final k = entry.value;
           final isSelected = _selectedKategori == k['name'];
-          return GestureDetector(
-            onTap: () => setState(() => _selectedKategori = k['name']),
-            child: Column(
-              children: [
-                Container(
-                  width: 52,
-                  height: 52,
-                  decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primary : Colors.white,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: isSelected
-                          ? AppColors.primary
-                          : AppColors.greyBorder,
+          return FadeInDown(
+            delay: Duration(milliseconds: 100 * index),
+            child: GestureDetector(
+              onTap: () => setState(() => _selectedKategori = k['name'] as String),
+              child: Column(
+                children: [
+                  Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.greyBorder,
+                        width: isSelected ? 2.0 : 1.0,
+                      ),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: AppColors.primary.withOpacity(0.2),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ]
+                          : [],
                     ),
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(
-                              color: AppColors.primary.withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 3),
-                            ),
-                          ]
-                        : [],
+                    child: Center(
+                      child: Image.asset(
+                        k['icon'] as String,
+                        width: 36,
+                        height: 36,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
-                  child: Icon(
-                    k['icon'] as IconData,
-                    color: isSelected ? Colors.white : AppColors.greyText,
-                    size: 26,
+                  const SizedBox(height: 6),
+                  Text(
+                    k['name'] as String,
+                    style: GoogleFonts.poppins(
+                      fontSize: 11,
+                      fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.w400,
+                      color: isSelected ? AppColors.primary : AppColors.greyText,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  k['name'] as String,
-                  style: GoogleFonts.poppins(
-                    fontSize: 11,
-                    fontWeight:
-                        isSelected ? FontWeight.w600 : FontWeight.w400,
-                    color: isSelected ? AppColors.primary : AppColors.greyText,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         }).toList(),
@@ -371,8 +393,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildLapanganCard(LapanganModel lapangan) {
-    return GestureDetector(
+  Widget _buildLapanganCard(LapanganModel lapangan, int index) {
+    return FadeInUp(
+      delay: Duration(milliseconds: 100 * index),
+      child: GestureDetector(
       onTap: () => Get.toNamed('/detail-lapangan', arguments: lapangan),
       child: Container(
         margin: const EdgeInsets.only(bottom: 14),
@@ -390,19 +414,24 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Row(
           children: [
             // Image
-            ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16),
-                bottomLeft: Radius.circular(16),
-              ),
-              child: Container(
-                width: 100,
-                height: 90,
-                color: _getLapanganColor(lapangan.kategori),
-                child: Icon(
-                  _getLapanganIcon(lapangan.kategori),
-                  size: 44,
-                  color: Colors.white.withOpacity(0.8),
+            Hero(
+              tag: 'lapangan_image_${lapangan.id}',
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  bottomLeft: Radius.circular(16),
+                ),
+                child: Image.asset(
+                  'assets/images/${lapangan.imageUrl}.jpg',
+                  width: 100,
+                  height: 90,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    width: 100,
+                    height: 90,
+                    color: AppColors.lightGrey,
+                    child: const Icon(Icons.image_not_supported, color: AppColors.greyText),
+                  ),
                 ),
               ),
             ),
@@ -413,15 +442,37 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      lapangan.nama,
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.blackText,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: _getLapanganColor(lapangan.kategori).withOpacity(0.12),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            lapangan.kategori,
+                            style: GoogleFonts.poppins(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: _getLapanganColor(lapangan.kategori),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            lapangan.nama,
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.blackText,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 2),
                     Row(
@@ -477,37 +528,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  Color _getLapanganColor(String kategori) {
-    switch (kategori) {
-      case 'Futsal':
-        return const Color(0xFF27A349);
-      case 'Basket':
-        return const Color(0xFFE8821A);
-      case 'Badminton':
-        return const Color(0xFF1976D2);
-      case 'Tenis':
-        return const Color(0xFF7B1FA2);
-      default:
-        return const Color(0xFF27A349);
-    }
-  }
-
-  IconData _getLapanganIcon(String kategori) {
-    switch (kategori) {
-      case 'Futsal':
-        return Icons.sports_soccer;
-      case 'Basket':
-        return Icons.sports_basketball;
-      case 'Badminton':
-        return Icons.sports_tennis;
-      case 'Tenis':
-        return Icons.sports_tennis;
-      default:
-        return Icons.sports;
-    }
+    ));
   }
 
   // Booking Tab Body
@@ -630,16 +651,16 @@ class _HomeScreenState extends State<HomeScreen> {
             ClipRRect(
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(16)),
-              child: Container(
+              child: Image.asset(
+                'assets/images/${lapangan.imageUrl}.jpg',
                 height: 130,
                 width: double.infinity,
-                color: _getLapanganColor(lapangan.kategori),
-                child: Center(
-                  child: Icon(
-                    _getLapanganIcon(lapangan.kategori),
-                    size: 60,
-                    color: Colors.white.withOpacity(0.7),
-                  ),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  height: 130,
+                  width: double.infinity,
+                  color: AppColors.lightGrey,
+                  child: const Icon(Icons.image_not_supported, size: 40, color: AppColors.greyText),
                 ),
               ),
             ),
@@ -778,19 +799,29 @@ class _HomeScreenState extends State<HomeScreen> {
               child: const Icon(Icons.person, size: 50, color: AppColors.primary),
             ),
             const SizedBox(height: 12),
-            Text(
-              'Ahmad Rizky',
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: AppColors.blackText,
-              ),
-            ),
-            Text(
-              'ahmad.rizky@email.com',
-              style: GoogleFonts.poppins(
-                  fontSize: 13, color: AppColors.greyText),
-            ),
+            // Name & Email from controller (reactive)
+            Obx(() {
+              final userController = Get.find<UserController>();
+              return Column(
+                children: [
+                  Text(
+                    userController.name.value.isNotEmpty
+                        ? userController.name.value
+                        : 'Pengguna SportNest',
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.blackText,
+                    ),
+                  ),
+                  Text(
+                    userController.email.value,
+                    style: GoogleFonts.poppins(
+                        fontSize: 13, color: AppColors.greyText),
+                  ),
+                ],
+              );
+            }),
             const SizedBox(height: 24),
             // Menu items
             ...[
@@ -811,7 +842,7 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icons.logout,
               label: 'Keluar',
               color: AppColors.error,
-              onTap: () => Get.offAllNamed('/login'),
+              onTap: () => Get.find<UserController>().logout(),
             ),
           ],
         ),

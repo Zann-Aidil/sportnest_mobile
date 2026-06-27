@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
+import '../controllers/user_controller.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -40,8 +41,15 @@ class _SplashScreenState extends State<SplashScreen>
     _fadeController.forward();
     _scaleController.forward();
 
-    Future.delayed(const Duration(seconds: 3), () {
-      Get.offNamed('/login');
+    Future.delayed(const Duration(seconds: 3), () async {
+      final userController = Get.find<UserController>();
+      // Pastikan sesi sudah dimuat sebelum navigasi
+      await userController.loadSession();
+      if (userController.isLoggedIn.value) {
+        Get.offNamed('/home');
+      } else {
+        Get.offNamed('/login');
+      }
     });
   }
 
@@ -65,16 +73,15 @@ class _SplashScreenState extends State<SplashScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 90,
-                  height: 90,
+                  width: 140,
+                  height: 140,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Colors.transparent,
                     borderRadius: BorderRadius.circular(22),
                   ),
-                  child: const Icon(
-                    Icons.sports_soccer,
-                    size: 50,
-                    color: AppColors.primary,
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    fit: BoxFit.contain,
                   ),
                 ),
                 const SizedBox(height: 20),

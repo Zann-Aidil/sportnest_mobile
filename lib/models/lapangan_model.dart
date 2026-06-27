@@ -43,10 +43,10 @@ class LapanganData {
   static List<LapanganModel> dummyLapangan = [
     LapanganModel(
       id: '1',
-      nama: 'Elite Futsal Arena',
-      lokasi: 'Jakarta Selatan',
+      nama: 'The Elite Futsal Nest',
+      lokasi: 'Medan Pancing',
       kategori: 'Futsal',
-      rating: 4.8,
+      rating: 4.9,
       jumlahUlasan: 120,
       hargaPerJam: 250000,
       deskripsi:
@@ -56,8 +56,8 @@ class LapanganData {
     ),
     LapanganModel(
       id: '2',
-      nama: 'Victory Basketball Court',
-      lokasi: 'Jakarta Barat',
+      nama: 'Gaperta Town',
+      lokasi: 'Medan Kota',
       kategori: 'Basket',
       rating: 4.7,
       jumlahUlasan: 98,
@@ -69,10 +69,10 @@ class LapanganData {
     ),
     LapanganModel(
       id: '3',
-      nama: 'Smash Badminton Hall',
-      lokasi: 'Jakarta Timur',
+      nama: 'Nest Badminton Hall',
+      lokasi: 'Medan Perjuangan',
       kategori: 'Badminton',
-      rating: 4.6,
+      rating: 4.9,
       jumlahUlasan: 75,
       hargaPerJam: 80000,
       deskripsi:
@@ -82,8 +82,8 @@ class LapanganData {
     ),
     LapanganModel(
       id: '4',
-      nama: 'Grand Tennis Court',
-      lokasi: 'Jakarta Pusat',
+      nama: 'The Force LeftDelta',
+      lokasi: 'Medan Tembung',
       kategori: 'Tenis',
       rating: 4.5,
       jumlahUlasan: 62,
@@ -96,7 +96,7 @@ class LapanganData {
     LapanganModel(
       id: '5',
       nama: 'Pro Futsal Center',
-      lokasi: 'Tangerang',
+      lokasi: 'Medan ',
       kategori: 'Futsal',
       rating: 4.3,
       jumlahUlasan: 45,

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:animate_do/animate_do.dart';
 import '../constants/colors.dart';
+import '../constants/assets.dart';
 import '../models/lapangan_model.dart';
 
 class BookingScreen extends StatefulWidget {
@@ -42,14 +44,8 @@ class _BookingScreenState extends State<BookingScreen> {
     }
   }
 
-  IconData _getLapanganIcon(String kategori) {
-    switch (kategori) {
-      case 'Futsal': return Icons.sports_soccer;
-      case 'Basket': return Icons.sports_basketball;
-      case 'Badminton':
-      case 'Tenis': return Icons.sports_tennis;
-      default: return Icons.sports;
-    }
+  String _getKategoriIcon(String kategori) {
+    return AppAssets.getKategoriIcon(kategori);
   }
 
   @override
@@ -75,6 +71,7 @@ class _BookingScreenState extends State<BookingScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
+
                   Container(
                     height: 48,
                     decoration: BoxDecoration(
@@ -169,14 +166,16 @@ class _BookingScreenState extends State<BookingScreen> {
                               topLeft: Radius.circular(16),
                               bottomLeft: Radius.circular(16),
                             ),
-                            child: Container(
+                            child: Image.asset(
+                              'assets/images/${lapangan.imageUrl}.jpg',
                               width: 100,
                               height: 90,
-                              color: _getLapanganColor(lapangan.kategori),
-                              child: Icon(
-                                _getLapanganIcon(lapangan.kategori),
-                                size: 44,
-                                color: Colors.white.withOpacity(0.8),
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Container(
+                                width: 100,
+                                height: 90,
+                                color: _getLapanganColor(lapangan.kategori),
+                                child: const Icon(Icons.sports, color: Colors.white, size: 32),
                               ),
                             ),
                           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:animate_do/animate_do.dart';
 import '../constants/colors.dart';
 import '../models/lapangan_model.dart';
 
@@ -266,35 +267,38 @@ class _PilihJadwalScreenState extends State<PilihJadwalScreen> {
             ),
             child: SafeArea(
               top: false,
-              child: SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: _selectedSlot == null
-                      ? null
-                      : () {
-                          final jamParts = _selectedSlot!.split(' - ');
-                          Get.toNamed('/konfirmasi-pemesanan', arguments: {
-                            'lapangan': lapangan,
-                            'tanggal': _selectedDate,
-                            'jamMulai': jamParts[0],
-                            'jamSelesai': jamParts[1],
-                          });
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: AppColors.greyBorder,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+              child: BounceInUp(
+                duration: const Duration(milliseconds: 600),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: _selectedSlot == null
+                        ? null
+                        : () {
+                            final jamParts = _selectedSlot!.split(' - ');
+                            Get.toNamed('/konfirmasi-pemesanan', arguments: {
+                              'lapangan': lapangan,
+                              'tanggal': _selectedDate,
+                              'jamMulai': jamParts[0],
+                              'jamSelesai': jamParts[1],
+                            });
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      disabledBackgroundColor: AppColors.greyBorder,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    'Lanjutkan',
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                    child: Text(
+                      'Lanjutkan',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),

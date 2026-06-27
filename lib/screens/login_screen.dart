@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
+import '../controllers/user_controller.dart';
+import '../services/database_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -25,11 +27,41 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleLogin() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
-      await Future.delayed(const Duration(seconds: 1));
-      setState(() => _isLoading = false);
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+    try {
+      final userData = await DatabaseService.instance.loginUser(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      if (userData == null) {
+        Get.snackbar(
+          'Login Gagal',
+          'Email atau kata sandi salah. Silakan coba lagi.',
+          backgroundColor: AppColors.error,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+          icon: const Icon(Icons.error_outline, color: Colors.white),
+        );
+        return;
+      }
+
+      final userController = Get.find<UserController>();
+      await userController.setUserFromDB(userData);
+
       Get.offAllNamed('/home');
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Terjadi kesalahan. Silakan coba lagi.',
+        backgroundColor: AppColors.error,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -77,13 +109,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Email Field
                 _buildTextField(
                   controller: _emailController,
-                  hint: 'Email atau No. Telepon',
+                  hint: 'Email',
                   prefixIcon: Icons.email_outlined,
                   keyboardType: TextInputType.emailAddress,
                   validator: (val) {
-                    if (val == null || val.isEmpty) {
-                      return 'Email tidak boleh kosong';
-                    }
+                    if (val == null || val.isEmpty) return 'Email tidak boleh kosong';
+                    if (!val.contains('@')) return 'Format email tidak valid';
                     return null;
                   },
                 ),
@@ -107,33 +138,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         setState(() => _obscurePassword = !_obscurePassword),
                   ),
                   validator: (val) {
-                    if (val == null || val.isEmpty) {
-                      return 'Kata sandi tidak boleh kosong';
-                    }
+                    if (val == null || val.isEmpty) return 'Kata sandi tidak boleh kosong';
                     return null;
                   },
-                ),
-                const SizedBox(height: 8),
-
-                // Forgot Password
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {},
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Text(
-                      'Lupa Kata Sandi?',
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                  ),
                 ),
                 const SizedBox(height: 24),
 
@@ -168,51 +175,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                   ),
-                ),
-                const SizedBox(height: 24),
-
-                // Or divider
-                Row(
-                  children: [
-                    const Expanded(
-                        child: Divider(color: AppColors.greyBorder)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Text(
-                        'atau masuk dengan',
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          color: AppColors.greyText,
-                        ),
-                      ),
-                    ),
-                    const Expanded(
-                        child: Divider(color: AppColors.greyBorder)),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
-                // Social Login Buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildSocialButton(
-                        icon: Icons.g_mobiledata_rounded,
-                        label: 'Google',
-                        iconColor: Colors.red,
-                        onTap: () {},
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildSocialButton(
-                        icon: Icons.facebook,
-                        label: 'Facebook',
-                        iconColor: const Color(0xFF1877F2),
-                        onTap: () {},
-                      ),
-                    ),
-                  ],
                 ),
                 const SizedBox(height: 32),
 
@@ -296,40 +258,6 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
       validator: validator,
-    );
-  }
-
-  Widget _buildSocialButton({
-    required IconData icon,
-    required String label,
-    required Color iconColor,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 50,
-        decoration: BoxDecoration(
-          border: Border.all(color: AppColors.greyBorder),
-          borderRadius: BorderRadius.circular(12),
-          color: Colors.white,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: iconColor, size: 22),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppColors.blackText,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

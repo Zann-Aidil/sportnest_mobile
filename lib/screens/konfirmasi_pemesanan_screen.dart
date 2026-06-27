@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:animate_do/animate_do.dart';
 import '../constants/colors.dart';
+import '../constants/assets.dart';
 import '../models/lapangan_model.dart';
 
 class KonfirmasiPemesananScreen extends StatefulWidget {
@@ -56,14 +58,8 @@ class _KonfirmasiPemesananScreenState
     }
   }
 
-  IconData _getLapanganIcon(String kategori) {
-    switch (kategori) {
-      case 'Futsal': return Icons.sports_soccer;
-      case 'Basket': return Icons.sports_basketball;
-      case 'Badminton':
-      case 'Tenis': return Icons.sports_tennis;
-      default: return Icons.sports;
-    }
+  String _getKategoriIcon(String kategori) {
+    return AppAssets.getKategoriIcon(kategori);
   }
 
   @override
@@ -108,16 +104,16 @@ class _KonfirmasiPemesananScreenState
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(10),
-                          child: Container(
-                            width: 60,
-                            height: 60,
-                            color: _getLapanganColor(lapangan.kategori),
-                            child: Center(
-                              child: Icon(
-                                _getLapanganIcon(lapangan.kategori),
-                                size: 30,
-                                color: Colors.white.withOpacity(0.8),
-                              ),
+                          child: Image.asset(
+                            'assets/images/${lapangan.imageUrl}.jpg',
+                            width: 72,
+                            height: 72,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(
+                              width: 72,
+                              height: 72,
+                              color: _getLapanganColor(lapangan.kategori),
+                              child: const Icon(Icons.sports, color: Colors.white, size: 32),
                             ),
                           ),
                         ),
@@ -241,35 +237,37 @@ class _KonfirmasiPemesananScreenState
             ),
             child: SafeArea(
               top: false,
-              child: SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: () => Get.toNamed('/pembayaran', arguments: {
-                    'lapangan': lapangan,
-                    'tanggal': tanggal,
-                    'jamMulai': jamMulai,
-                    'jamSelesai': jamSelesai,
-                    'metode': _selectedMetode,
-                  }),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+              child: BounceInUp(
+                duration: const Duration(milliseconds: 600),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: () => Get.toNamed('/pembayaran', arguments: {
+                      'lapangan': lapangan,
+                      'tanggal': tanggal,
+                      'jamMulai': jamMulai,
+                      'jamSelesai': jamSelesai,
+                      'metode': _selectedMetode,
+                    }),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      elevation: 0,
                     ),
-                  ),
-                  child: Text(
-                    'Bayar Sekarang',
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                    child: Text(
+                      'Bayar Sekarang',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
+              ),    ),
           ),
         ],
       ),

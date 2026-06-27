@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
+import '../controllers/user_controller.dart';
+import '../controllers/payment_controller.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final UserController userController = Get.find<UserController>();
+    final PaymentController paymentController = Get.find<PaymentController>();
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8F8F8),
       appBar: AppBar(
@@ -44,11 +49,11 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: Column(
+                    child: Obx(() => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Ahmad Rizky',
+                          userController.name.value,
                           style: GoogleFonts.poppins(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
@@ -57,7 +62,7 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'ahmad.rizky@email.com',
+                          userController.email.value,
                           style: GoogleFonts.poppins(
                             fontSize: 13,
                             color: AppColors.greyText,
@@ -65,17 +70,17 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '+62 812 3456 7890',
+                          userController.phone.value,
                           style: GoogleFonts.poppins(
                             fontSize: 13,
                             color: AppColors.greyText,
                           ),
                         ),
                       ],
-                    ),
+                    )),
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () => Get.toNamed('/edit-profile'),
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
@@ -110,7 +115,7 @@ class ProfileScreen extends StatelessWidget {
                 _MenuItem(
                   icon: Icons.payment_outlined,
                   label: 'Metode Pembayaran',
-                  onTap: () {},
+                  onTap: () => Get.toNamed('/payment-method'),
                 ),
                 _MenuItem(
                   icon: Icons.notifications_outlined,
@@ -147,7 +152,7 @@ class ProfileScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: GestureDetector(
-                onTap: () => Get.offAllNamed('/login'),
+                onTap: () => userController.logout(),
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 16),
